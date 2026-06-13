@@ -1,0 +1,60 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sportshop_backend
+    restart: unless-stopped
+    environment:
+      PORT: "8080"
+      DATA_DIR: /app/data
+      JWT_SECRET: ${JWT_SECRET:-changeme_in_production}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@sportshop.ru}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-Admin123!}
+    volumes:
+      - backend_data:/app/data
+    networks:
+      - sportshop_net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost/api}
+    container_name: sportshop_frontend
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost/api}
+    networks:
+      - sportshop_net
+    depends_on:
+      - backend
+
+  nginx:
+    image: nginx:alpine
+    container_name: sportshop_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - sportshop_net
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  backend_data:
+
+networks:
+  sportshop_net:
+    driver: bridge

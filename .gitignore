@@ -1,0 +1,35 @@
+# Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/.env
+frontend/.env.local
+frontend/.env.production
+frontend/out/
+frontend/build/
+frontend/dist/
+frontend/.vercel/
+frontend/*.log
+
+# Backend (Go)
+backend/data/
+backend/*.exe
+backend/*.exe~
+backend/*.dll
+backend/*.so
+backend/*.dylib
+backend/vendor/
+backend/.env
+backend/.idea/
+
+# Общие
+.DS_Store
+**/.DS_Store
+*.log
+*.tmp
+*.pid
+*.seed
+*.pid.lock
+
+# Docker / volumes
+backend_data/
+sportshop2.code-workspace
